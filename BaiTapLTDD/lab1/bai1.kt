@@ -1,90 +1,60 @@
+package com.example.lab1.ui.theme
 
-fun main() {
-    println("Hello, world!")
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
+
+class bai1 : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+
+            val age: Int = 5
+            val name: String = "Rover"
+
+            var roll: Int = 6
 
 
-    val age = 5
-    val name = "Rover"
-    var roll = 6
-    var rolledValue: Int = 4
+            val randomNumber = rollDice()
 
-    // String template
-    println("You are already $age!")
-    println("You are already ${age} days old, $name!")
-    println("roll=$roll, rolledValue=$rolledValue")
+            Column {
 
-    // Gọi hàm
-    printHello()
-    printBorder("=", 23)
 
-    val diceRange = 1..6
-    val randomNumber = diceRange.random()
-    println("randomNumber from range: $randomNumber")
+                Text(text = "Hello, world!")
+                Text(text = "This is the text to print!")
 
-    // Hàm trả về giá trị
-    val r = rollDice()
-    println("rollDice() returned: $r")
+                Text(text = "You are already $age!")
+                Text(text = "You are already $age days old, $name!")
 
-    // repeat() và lồng repeat()
-    printBorder("*", 30)
-    printCakeBottom(age = 5, layers = 3)
-    printBorder("*", 30)
+                Text(text = printHello())
 
-    // if / else if / else
-    val num = 4
-    if (num > 4) {
-        println("The variable is greater than 4")
-    } else if (num == 4) {
-        println("The variable is equal to 4")
-    } else {
-        println("The variable is less than 4")
+                Text(text = printBorder("*", 10))
+
+                val sum = 3 + 5
+                val isGreater = sum > 5
+                Text(text = "Sum = $sum")
+                Text(text = "Is sum > 5? $isGreater")
+
+                Text(text = "Random dice number: $randomNumber")
+            }
+        }
     }
-
-    // when :
-    val luckyNumber = 3
-    val rollResult = (1..6).random()
-    println("rollResult=$rollResult, luckyNumber=$luckyNumber")
-    when (rollResult) {
-        luckyNumber -> println("You won!")
-        1 -> println("So sorry! You rolled a 1. Try again!")
-        2 -> println("Sadly, you rolled a 2. Try again!")
-        3 -> println("Unfortunately, you rolled a 3. Try again!")
-        4 -> println("No luck! You rolled a 4. Try again!")
-        5 -> println("Don't cry! You rolled a 5. Try again!")
-        6 -> println("Apologies! you rolled a 6. Try again!")
-    }
-
-    // Class Dice
-    val myFirstDice = Dice(numSides = 6)
-    println("Dice rolled: ${myFirstDice.roll()}")
 }
 
-// Hàm không có đối số :
-fun printHello() {
-    println("Hello Kotlin")
+
+fun printHello(): String {
+    return "Hello Kotlin"
 }
 
-// Hàm có đối số :
-fun printBorder(border: String, timesToRepeat: Int) {
-    repeat(timesToRepeat) { print(border) }
-    println()
+
+fun printBorder(border: String, timesToRepeat: Int): String {
+    return border.repeat(timesToRepeat)
 }
 
-// Hàm trả về Int
+
 fun rollDice(): Int {
-    val randomNumber = (1..6).random()
-    return randomNumber
-}
-
-//  repeat() lồng nhau
-fun printCakeBottom(age: Int, layers: Int) {
-    repeat(layers) {
-        repeat(age + 2) { print("@") }
-        println()
-    }
-}
-
-// Class có tham số
-class Dice(private val numSides: Int) {
-    fun roll(): Int = (1..numSides).random()
+    return (1..6).random()
 }
