@@ -1,62 +1,118 @@
-// bai4.kt
-// xài try catch, thread, object, enum
+package com.example.lab1.ui.theme
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.*
 import kotlin.random.Random
 
-fun main() {
-    println("=== BAI 4 ===")
+class bai4 : ComponentActivity() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    val t = Thread {
-        val output = getValueBlocking()
-        println("Thread got value = $output (thread=${Thread.currentThread().name})")
+        setContent {
+            MaterialTheme {
+                BaiCoroutineUI()
+            }
+        }
     }
-    t.start()
-
-
-
-    t.join()
-
-
-    try {
-        riskyWork()
-    } catch (e: Exception) {
-        println("Caught exception: ${e.message}")
-    }
-
-    // 3) object (singleton)
-    DataProviderManager.log("Hello from object singleton")
-
-    // 4) enum + when
-    val direction = Direction.NORTH
-    when (direction) {
-        Direction.NORTH -> println("Go up")
-        Direction.SOUTH -> println("Go down")
-        Direction.WEST  -> println("Go left")
-        Direction.EAST  -> println("Go right")
-    }
-
-    println("Done.")
 }
 
+@Composable
+fun BaiCoroutineUI() {
 
-fun getValueBlocking(): Double {
-    try {
-        Thread.sleep(300) // giả lập chờ
-    } catch (_: InterruptedException) {
-        // bị interrupt
-        return -1.0
+    var result by remember { mutableStateOf("Chưa chạy") }
+    var job by remember { mutableStateOf<Job?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+
+        Text(
+            text = "BÀI TẬP COROUTINE & KHÁC",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Divider()
+
+        // ===== Coroutine launch =====
+        Button(onClick = {
+            job = CoroutineScope(Dispatchers.Main).launch {
+                result = "Đang chạy..."
+                try {
+                    val value = getValue()
+                    result = "Kết quả: $value"
+                } catch (e: Exception) {
+                    result = "Lỗi: ${e.message}"
+                }
+            }
+        }) {
+            Text("Chạy Coroutine")
+        }
+
+        // ===== Cancel Job =====
+        Button(onClick = {
+            job?.cancel()
+            result = "Đã hủy Coroutine"
+        }) {
+            Text("Hủy Coroutine")
+        }
+
+        Divider()
+
+        Text("Kết quả:")
+        Text(result)
+
+        Divider()
+
+        // ===== Enum =====
+        var direction by remember {
+            mutableStateOf(Direction.NORTH)
+        }
+
+        Button(onClick = {
+            direction = Direction.values().random()
+        }) {
+            Text("Đổi hướng")
+        }
+
+        when (direction) {
+            Direction.NORTH -> Text("Hướng Bắc")
+            Direction.SOUTH -> Text("Hướng Nam")
+            Direction.WEST -> Text("Hướng Tây")
+            Direction.EAST -> Text("Hướng Đông")
+        }
+
+        Divider()
+
+        // ===== Object =====
+        Text("Object DataProviderManager:")
+        Text(DataProviderManager.name)
     }
-    return Random.nextDouble()
 }
 
-fun riskyWork() {
-    throw IllegalStateException("Something went wrong")
+//////////////////////////////////////////////////
+// ===== Suspend function =====
+suspend fun getValue(): Double {
+    delay(2000) // giả lập tác vụ lâu
+    return Random.nextDouble(0.0, 100.0)
 }
 
+// ===== Object =====
 object DataProviderManager {
-    fun log(message: String) = println("DataProviderManager: $message")
+    val name = "Data Provider Ready"
 }
 
+// ===== Enum =====
 enum class Direction {
     NORTH, SOUTH, WEST, EAST
 }
