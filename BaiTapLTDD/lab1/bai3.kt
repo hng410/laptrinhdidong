@@ -1,106 +1,118 @@
-// bai3.kt
+package com.example.lab1.ui.theme
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+class bai3 : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+
+            Bai3UI()
+        }
+    }
+}
 
 
-fun main() {
+@Composable
+fun Bai3UI() {
 
+    // ===== 1. Tạo Set từ List =====
     val numbers = listOf(0, 3, 8, 4, 0, 5, 5, 8, 9, 2)
     val setOfNumbers = numbers.toSet()
-    println("setOfNumbers = $setOfNumbers")
 
+    // ===== 2. Set =====
     val set1 = setOf(1, 2, 3)
     val set2 = mutableSetOf(3, 4, 5)
-    println("intersect = ${set1.intersect(set2)}")
-    println("union = ${set1.union(set2)}")
 
-    // Map mutable :
+    // ===== 3. Map =====
     val peopleAges = mutableMapOf(
         "Fred" to 30,
         "Ann" to 23
     )
-    peopleAges.put("Barbara", 42)
+    peopleAges["Barbara"] = 42
     peopleAges["Joe"] = 51
 
-    // forEach :
-    peopleAges.forEach { print("${it.key} is ${it.value}, ") }
-    println()
-
-    // map + joinToString :
-    println(peopleAges.map { "${it.key} is ${it.value}" }.joinToString(", "))
-
-    // filter :
+    // ===== 4. Map operations =====
+    val mapLoopResult = peopleAges.map { "${it.key} is ${it.value}" }
     val filteredNames = peopleAges.filter { it.key.length < 4 }
-    println("filteredNames = $filteredNames")
 
-    // Chuỗi phép toán collection :
+    // ===== 5. Collection khác =====
     val words = listOf("about", "acute", "balloon", "best", "brief", "class")
     val filteredWords = words
         .filter { it.startsWith("b", ignoreCase = true) }
         .shuffled()
         .take(2)
         .sorted()
-    println("filteredWords = $filteredWords")
 
-    // Scope functions: let :
-    val maybeText: String? = "Hello"
-    val lengthOrNull = maybeText?.let { it.length }
-    println("lengthOrNull = $lengthOrNull")
+    // ===== 6. Lambda =====
+    val triple: (Int) -> Int = { it * 3 }
 
-    // Scope functions: apply :
-    val builder = StringBuilder().apply {
-        append("Kotlin ")
-        append("apply() ")
-        append("demo")
-    }
-    println(builder.toString())
+    // ===== 7. Elvis =====
+    val quantity: Int? = null
 
-    // Backing property :
-    val holder = BackingPropertyDemo()
-    println("currentScrambledWord = ${holder.currentScrambledWord}")
+    // ===== UI =====
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
 
-    // Safe call chain
-    val a: String? = null
-    val safe = a?.trim()?.uppercase()
-    println("safe = $safe")
+        Text(
+            text = "BÀI TẬP KOTLIN – COLLECTIONS & KHÁC",
+            style = MaterialTheme.typography.titleLarge
+        )
 
-    // Lambda :
-    val triple: (Int) -> Int = { x: Int -> x * 3 }
-    println("triple(5) = ${triple(5)}")
+        Divider()
 
-    // Companion object :
-    println("DetailActivity.LETTER = ${DetailActivity.LETTER}")
+        Text("1. Set từ List:")
+        Text(setOfNumbers.toString())
 
-    // Delegated property
-    val lazyValue: String by lazy { "I am lazy" }
-    println("lazyValue = $lazyValue")
+        Text("2. Set operations:")
+        Text("Intersect: ${set1.intersect(set2)}")
+        Text("Union: ${set1.union(set2)}")
 
-    // lateinit :
-    val late = LateInitDemo()
-    late.init("assigned later")
-    println("late.currentWord = ${late.currentWord}")
+        Divider()
 
-    // Elvis operator :
-    var quantity: Int? = null
-    println("quantity ?: 0 = ${quantity ?: 0}")
-    quantity = 4
-    println("quantity ?: 0 = ${quantity ?: 0}")
-}
+        Text("3. Map peopleAges:")
+        peopleAges.forEach {
+            Text("${it.key} : ${it.value}")
+        }
 
-class BackingPropertyDemo {
-    private var _currentScrambledWord = "test" // :
-    val currentScrambledWord: String
-        get() = _currentScrambledWord
-}
+        Divider()
 
-class DetailActivity {
-    companion object {
-        const val LETTER = "letter" // :
-    }
-}
+        Text("4. Lặp & chuyển đổi Map:")
+        mapLoopResult.forEach {
+            Text(it)
+        }
 
-class LateInitDemo {
-    lateinit var currentWord: String // :
+        Divider()
 
-    fun init(value: String) {
-        currentWord = value
+        Text("5. Lọc Map (tên < 4 ký tự):")
+        Text(filteredNames.toString())
+
+        Divider()
+
+        Text("6. Các phép toán khác trên Collection:")
+        Text(filteredWords.toString())
+
+        Divider()
+
+        Text("7. Lambda:")
+        Text("triple(5) = ${triple(5)}")
+
+        Divider()
+
+        Text("8. Toán tử Elvis:")
+        Text("quantity ?: 0 = ${quantity ?: 0}")
     }
 }
