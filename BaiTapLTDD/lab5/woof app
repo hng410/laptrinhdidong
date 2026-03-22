@@ -6,27 +6,25 @@ import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.woof.data.Dog
 import com.example.woof.data.dogs
 import com.example.woof.ui.theme.WoofTheme
-import androidx.compose.ui.draw.clip
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,72 +39,121 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WoofApp() {
-    LazyColumn {
-        items(dogs) {
-            DogItem(dog = it)
+    // Scaffold cung cấp cấu trúc chuẩn gồm thanh TopBar và phần nội dung
+    Scaffold(
+        topBar = {
+            WoofTopAppBar()
+        }
+    ) { it ->
+        LazyColumn(contentPadding = it) {
+            items(dogs) {
+                DogItem(
+                    dog = it,
+                    modifier = Modifier.padding(8.dp) // Khoảng cách giữa các thẻ
+                )
+            }
         }
     }
 }
 
-/**
- * Đã gộp 2 hàm DogItem của bạn thành 1 và để padding 16dp cho to hơn
- */
+@ExperimentalMaterial3Api
+@Composable
+fun WoofTopAppBar(modifier: Modifier = Modifier) {
+    CenterAlignedTopAppBar(
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .padding(8.dp),
+                    painter = painterResource(R.drawable.ic_woof_logo), // Đảm bảo bạn có icon chân chó trong drawable
+                    contentDescription = null
+                )
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.displayLarge
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
 @Composable
 fun DogItem(
     dog: Dog,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp) // Kích thước mục to hơn ở đây
-    ) {
-        DogIcon(dog.imageResourceId)
-        DogInformation(dog.name, dog.age)
+    // Card tạo hiệu ứng ô bao quanh, tự đổi màu theo chế độ Sáng/Tối
+    Card(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            DogIcon(dog.imageResourceId)
+            DogInformation(dog.name, dog.age)
+            Spacer(modifier = Modifier.weight(1f))
+            DogItemButton(expanded = false, onClick = {})
+        }
     }
 }
 
 @Composable
-fun DogIcon(
-    @DrawableRes dogIcon: Int,
-    modifier: Modifier = Modifier
-) {
+private fun DogItemButton(expanded: Boolean, onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Filled.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.secondary
+        )
+    }
+}
+
+@Composable
+fun DogIcon(@DrawableRes dogIcon: Int) {
     Image(
-        modifier = modifier
-            .size(90.dp) // <--- CHỈNH ẢNH TO/NHỎ Ở ĐÂY
-            .padding(8.dp) // <--- CHỈNH KHOẢNG CÁCH VIỀN ẢNH
-            .clip(androidx.compose.foundation.shape.CircleShape), // <--- THÊM DÒNG NÀY NẾU MUỐN ẢNH TRÒN
+        modifier = Modifier
+            .size(64.dp)
+            .padding(8.dp)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop,
         painter = painterResource(dogIcon),
-        contentDescription = null,
-        contentScale = androidx.compose.ui.layout.ContentScale.Crop // <--- GIÚP ẢNH KHÔNG BỊ MÉO
+        contentDescription = null
     )
 }
 
 @Composable
-fun DogInformation(
-    @StringRes dogName: Int,
-    dogAge: Int,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.padding(start = 12.dp)) { // Tăng khoảng cách chữ với ảnh
+fun DogInformation(@StringRes dogName: Int, dogAge: Int) {
+    Column {
         Text(
             text = stringResource(dogName),
-            fontSize = 22.sp, // Chữ tên to hơn
-            modifier = Modifier.padding(top = 8.dp)
+            style = MaterialTheme.typography.displayMedium
         )
         Text(
             text = stringResource(R.string.years_old, dogAge),
-            fontSize = 18.sp // Chữ tuổi to hơn
+            style = MaterialTheme.typography.bodyLarge
         )
+    }
+}
+
+// Preview để xem trước cả 2 chế độ
+@Preview(showBackground = true)
+@Composable
+fun WoofLightPreview() {
+    WoofTheme(darkTheme = false) {
+        WoofApp()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun WoofPreview() {
-    WoofTheme {
+fun WoofDarkPreview() {
+    WoofTheme(darkTheme = true) {
         WoofApp()
     }
 }
