@@ -1,0 +1,175 @@
+package com.example.cardhbd
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.CircleShape // Nhớ import dòng này
+import androidx.compose.ui.draw.clip // Nhớ import dòng này
+import androidx.compose.ui.layout.ContentScale       // Sửa lỗi ContentScale
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
+
+// Sửa lỗi CircleShape
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFFE2B4FA) // Light greenish background common in these tutorials
+                ) {
+                    BusinessCard()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BusinessCard() {
+    // Box tổng cho toàn màn hình để xếp chồng các lớp
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // --- LỚP 1: ẢNH BÌA (Nằm dưới cùng) ---
+        Image(
+            painter = painterResource(id = R.drawable.meoo), // Nhớ đổi tên ảnh của bạn
+            contentDescription = null,
+            contentScale = ContentScale.Crop, // Cắt ảnh để lấp đầy chiều ngang
+            modifier = Modifier
+                .height(200.dp) // Chiều cao cố định cho ảnh bìa
+                .fillMaxWidth() // Rộng hết màn hình
+        )
+
+        // --- LỚP 2: NỘI DUNG CHÍNH (Avatar + Tên + Thông tin) ---
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Spacer này giúp đẩy Avatar xuống đúng vị trí giao nhau
+            // Công thức: Chiều cao ảnh bìa (200) - Một nửa Avatar (60) = 140.dp
+            Spacer(modifier = Modifier.height(140.dp))
+
+            // Avatar hình tròn
+            Image(
+                painter = painterResource(id = R.drawable.meo),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    // Thêm viền trắng cho avatar nổi bật hơn trên nền ảnh bìa (Tùy chọn)
+                    .border(2.dp, Color.White, CircleShape)
+            )
+
+            // Tên hiển thị
+            Text(
+                text = "Nhom nhom",
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Light,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            // Chức danh
+            Text(
+                text = "Toi ten Nhung",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF006D3B),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            // Spacer đẩy thông tin liên hệ xuống dưới đáy
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Phần thông tin liên hệ (Giữ nguyên như cũ)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ContactInfoRow(
+                    icon = Icons.Default.Phone,
+                    text = "+84 325537516",
+                    iconColor = Color(0xFFFFFFFF)
+                )
+                ContactInfoRow(
+                    icon = Icons.Default.Share,
+                    text = "Nhunisme",
+                    iconColor = Color(0xFF000000)
+                )
+                ContactInfoRow(
+                    icon = Icons.Default.Email,
+                    text = "nhunglth.24itb@vku.udn.vn",
+                    iconColor = Color(0xFF006D3B)
+                )
+            }
+        }
+    }
+}
+@Composable
+fun ContactInfoRow(icon: ImageVector, text: String, iconColor: Color) {
+    Row(
+        modifier = Modifier
+            .width(250.dp) // Fixed width to align items properly
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = text,
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BusinessCardPreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color(0xFFD2E8D4)
+        ) {
+            BusinessCard()
+        }
+    }
+}
